@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width,initial-scale=1.0">
+        <title>WP JSON API Vue.js</title>
+    </head>
+    <body>
+        <script type="text/x-template" id="ddd-wp-recent-posts-template" data-post-count="5">// <![CDATA[
+            <ul>
+                <li v-for="post in posts" :key="post.id">
+                    <router-link :to="{ name: 'posts-view', params: { slug: post.slug, post } }" v-html="post.title"></router-link>
+                </li>
+            </ul>
+        // ]]></script>
+
+        <script type="text/x-template" id="ddd-wp-authors-index-template">// <![CDATA[
+            <ul>
+                <li v-if="$route.name !== 'posts-index'">
+                    <router-link :to="{ name: 'posts-index' }">All</router-link>
+                </li>
+                <li v-for="author in authors" :key="author.id">
+                    <router-link :to="{ name: 'authors-view', params: { id: author.id } }">{{ author.name }}</router-link>
+                </li>
+            </ul>
+        // ]]></script>
+
+        <script type="text/x-template" id="ddd-wp-categories-index-template">// <![CDATA[
+            <ul>
+                <li v-if="$route.name !== 'posts-index'">
+                    <router-link :to="{ name: 'posts-index' }">All</router-link>
+                </li>
+                <li v-for="category in categories" :key="category.id">
+                    <router-link :to="{ name: 'categories-view', params: { id: category.id } }">{{ category.name }} ({{ category.count }})</router-link>
+                </li>
+            </ul>
+        // ]]></script>
+
+        <script type="text/x-template" id="ddd-wp-posts-index-template">// <![CDATA[
+            <div>
+                <div v-for="post in posts" :key="post.id">
+                    <h1><router-link :to="{ name: 'posts-view', params: { slug: post.slug, post } }" v-html="post.title"></router-link></h1>
+                    <p>Posted {{ post.date.fromNow() }} | By {{ post.author }}</p>
+                    <div v-html="post.excerpt"></div>
+                    <ul v-if="post.categories.length > 0">
+                        <li><em>Posted in</em></li>
+                        <li v-for="category in post.categories" :key="category.id">
+                            <router-link :to="{ name: 'categories-view', params: { id: category.id } }">{{ category.name }}</router-link>
+                        </li>
+                    </ul>
+                    <ul v-if="post.tags.length">
+                        <li><em>Tagged</em></li>
+                        <li v-for="tag in post.tags" :key="tag.id">
+                            <router-link :to="{ name: 'tags-view', params: { id: tag.id } }">{{ tag.name }}</router-link>
+                        </li>
+                    </ul>
+                </div>
+                <ul>
+                    <li>
+                        <a href @click.prevent="previousPage">&laquo;</a>
+                    </li>
+                    <li v-for="page in pages" :key="'page-' + page">
+                        <a href @click.prevent="goToPage(page)">{{ page }}</a>
+                    </li>
+                    <li>
+                        <a href @click.prevent="nextPage">&raquo;</a>
+                    </li>
+                </ul>
+            </div>
+        // ]]></script>
+
+        <script type="text/x-template" id="ddd-wp-posts-view-template">// <![CDATA[
+            <div>
+                <h1 v-html="post.title"></h1>
+                <ul v-if="post.categories.length > 0">
+                    <li><em>Posted in</em></li>
+                    <li v-for="category in post.categories" :key="category.id">
+                        <router-link :to="{ name: 'categories-view', params: { id: category.id } }">{{ category.name }}</router-link>
+                    </li>
+                </ul>
+                <ul v-if="post.tags.length > 0">
+                    <li><em>Tagged</em></li>
+                    <li v-for="tag in post.tags" :key="tag.id">
+                        <router-link :to="{ name: 'tags-view', params: { id: tag.id } }">{{ tag.name }}</router-link>
+                    </li>
+                </ul>
+                <div v-html="post.content"></div>
+            </div>
+        // ]]></script>
+
+        <div class="ddd-wp-vue-app">
+        <!-- <div class="ddd-wp-vue-app" blog-url="https://datadriven.design/" url-regex="localhost"> -->
+            <div>
+                <ddd-wp-authors-index></ddd-wp-authors-index>
+                <ddd-wp-categories-index></ddd-wp-categories-index>
+                <ddd-wp-recent-posts></ddd-wp-recent-posts>
+            </div>
+            <router-view :key="$route.fullPath"></router-view>
+        </div>
+
+        <input type="hidden" id="ddd-wp-vue-app-blog-url" value="https://datadriven.design/">
+        <input type="hidden" id="ddd-wp-vue-app-url-regex" value="localhost">
+    </body>
+</html>
